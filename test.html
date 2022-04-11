@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+  </head>
+  <body>
+    <div id = 'main'>
+      <img src = 'MC2-tourist.jpg' height = '383.75px' width = '685px'/>
+    </div>
+    <script>
+      d3.select("#main")
+      .on("click",()=>{
+        alert(trans([event.offsetX,event.offsetY]))
+        //alert(trans([684,289]))
+      })
+      
+      var trans =d=>{
+      let scaleX = d3.scale.linear().domain([0,685]).range([24.82396,24.91025]),
+      scaleY = d3.scale.linear().domain([0,383.75]).range([36.09572,36.04527])
+      
+      return [scaleX(d[0]),scaleY(d[1])]
+    }
+      console.log([0,2,3].slice(0,2))
+    
+    </script>
+  </body>
+</html>

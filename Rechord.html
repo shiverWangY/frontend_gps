@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> re chord</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const width =600
+      const height = 550
+      const colors = [ "#8dd3c7", "#ffffb3", "#bebada","#fb8072","#80b1d3", 
+      "#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"]
+      
+      const nodesNum = 12
+          
+      const outerR = Math.min(width, height) / 2 - 100
+      const innerR = outerR - 10
+      const padAngle = 2 * Math.PI / 200
+      
+      let matrix = []
+      for(let i = 0;i<3;i++){
+        let sol = [0,0,0]
+        for(let j = 0;j<12;j++){
+          sol.push(Math.floor(Math.random() * 100))
+        }
+        matrix.push(sol)
+      }
+      for(let i = 0;i<12;i++){
+        
+        let sol = [matrix[0][i+3],matrix[1][i+3],matrix[2][i+3]]
+        for(let j = 0;j<12;j++){
+          sol.push(0)
+        }
+        matrix.push(sol)
+      }
+      
+      /* const chords = d3.chord()
+          .padAngle(padAngle)
+          (matrix) */
+       
+         
+      let chords = d3.layout.chord().matrix(matrix);
+      console.log(chords)
+      
+      var svg = d3.select("body").append("svg")
+      
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                .attr('transform', "translate("+[width/2,height/2]+")")
+            
+      drawGroups()
+      drawChords()
+      
+      function drawGroups() {
+          const groups = chords.groups // 节点数组
+          const maxVal = d3.max(groups, d => d.value)
+          
+          const arc = d3.svg.arc()
+              .innerRadius(innerR)
+              .outerRadius(outerR)
+          
+          svg.append('g')
+              .attr('class', 'groups')
+              .selectAll('g')
+              .data(groups)
+              .enter()
+              .append('g')
+              .attr('class', 'group')
+              .append('path')
+              .attr('d', d => {
+                  return arc(d)
+              })
+              .attr('fill', (_, i) => colors[i%12])
+      }
+      
+      function drawChords() {
+          const ribbon = d3.svg.ribbon()
+              .radius(innerR - 20)
+          
+          svg.append('g')
+              .attr('class', 'chord')
+              .selectAll('path')
+              .data(chords)
+              .enter()
+              .append('path')
+          svg.select(".chord")
+              .selectAll("path")
+              .data(chords)
+              .filter(d=>d.source.index <=2)
+              .attr('d', ribbon)
+              .attr('fill', ({ source: { index } }) => colors[index % 12])
+              .attr('stroke', ({ source: { index } }) => d3.rgb(colors[index]).darker())
+              .on('mouseover', function ({ source: { index } }, i) {
+                  d3.select(this)
+                      .attr('fill', d3.rgb(colors[index]).darker())
+              })
+              .on('mouseout', function ({ source: { index } }) {
+                  d3.select(this)
+                      .attr('fill', colors[index])
+              })
+      }
+    
+    
+    </script>
+  </body>
+</html>
